@@ -4,86 +4,145 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>QR Chat</title>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css?family=Nunito:400,600&display=swap" rel="stylesheet">
+
 <style>
     * {
         box-sizing: border-box;
-        font-family: sans-serif;
     }
-
     body {
         margin: 0;
         padding: 0;
-        background: #1f1f1f;
+        background: linear-gradient(135deg, #1f1f1f, #3a3a3a);
         color: #f0f0f0;
+        font-family: 'Nunito', sans-serif;
         display: flex;
+        flex-direction: column;
         height: 100vh;
         overflow: hidden;
     }
-
-    .container {
-        display: flex;
+    .top-bar {
         width: 100%;
-        height: 100%;
+        padding: 10px 20px;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        position: relative;
+    }
+    .top-bar::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 1px;
+        background: #ffffff30;
+    }
+    .top-bar .brand {
+        font-size: 16px;
+        color: #fff;
+        opacity: 0.8;
     }
 
-    /* Sol kısım (Chat) */
+    .container {
+        flex: 1;
+        display: flex;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    /* Sol Panel (Chat) */
     .left-panel {
         width: 35%;
-        background: #2b2b2b;
+        max-width: 400px;
+        background: rgba(0,0,0,0.3);
+        backdrop-filter: blur(10px);
         display: flex;
         flex-direction: column;
         padding: 20px;
+        border-right: 1px solid #ffffff20;
     }
+
     .header {
         font-size: 24px;
-        margin-bottom: 10px;
+        margin-bottom: 20px;
         text-align: center;
+        font-weight: 600;
+        color: #ffffff;
+        opacity: 0.9;
     }
+
     .messages {
         flex: 1;
         overflow-y: auto;
         margin-bottom: 20px;
-        border: 1px solid #444;
         padding: 10px;
-        border-radius: 4px;
-        background: #1f1f1f;
+        border-radius: 8px;
+        background: rgba(255,255,255,0.05);
     }
+
     .message {
-        background: #3a3a3a;
+        background: rgba(255,255,255,0.1);
         padding: 10px;
-        border-radius: 4px;
+        border-radius: 8px;
         margin-bottom: 10px;
         word-break: break-word;
+        font-size: 14px;
     }
+
     .input-area {
         display: flex;
+        margin-bottom: 10px;
     }
     .input-area input {
         flex: 1;
         padding: 10px;
         border: 1px solid #444;
-        background: #1f1f1f;
+        background: #2b2b2b;
         color: #fff;
-        border-radius: 4px 0 0 4px;
+        border-radius: 8px 0 0 8px;
         outline: none;
+        font-size: 14px;
     }
     .input-area button {
-        padding: 10px;
+        padding: 10px 15px;
         border: none;
         background: #ff6b6b;
         color: #fff;
         font-weight: bold;
         cursor: pointer;
-        border-radius: 0 4px 4px 0;
+        border-radius: 0 8px 8px 0;
+        transition: background 0.3s;
     }
     .input-area button:hover {
         background: #ff4b4b;
     }
 
-    /* Sağ kısım (QR) */
+    .decode-area {
+        display: flex;
+        justify-content: center;
+    }
+    .decode-area button {
+        background: #4caf50;
+        border: none;
+        padding: 10px 15px;
+        color: #fff;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        transition: background 0.3s;
+    }
+    .decode-area button:hover {
+        background: #45a049;
+    }
+
+    /* Sağ Panel (QR) */
     .right-panel {
-        width: 65%;
-        background: #1f1f1f;
+        flex: 1;
+        background: transparent;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -92,45 +151,77 @@
         overflow: hidden;
         padding: 20px;
     }
+
     .qr-container {
         opacity: 0;
         transform: scale(0.5) rotate(10deg);
         transition: all 0.5s ease;
-        background: #ffffff20;
+        background: rgba(255,255,255,0.05);
         padding: 40px;
         border-radius: 20px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
         margin-bottom: 20px;
     }
     .qr-container.show {
         opacity: 1;
         transform: scale(1) rotate(0deg);
     }
+
     .download-area {
-        display: flex;
+        display: none;
         gap: 10px;
+        margin-top: 10px;
     }
+
+    .download-area.show {
+        display: flex;
+    }
+
     .download-area button {
         background: #4caf50;
         border: none;
         padding: 10px;
         color: #fff;
-        border-radius: 4px;
+        border-radius: 8px;
         cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        transition: background 0.3s;
     }
     .download-area button:hover {
         background: #45a049;
     }
+
+    /* Responsive */
+    @media (max-width: 800px) {
+        .left-panel {
+            width: 100%;
+            max-width: none;
+            border-right: none;
+        }
+        .right-panel {
+            display: none;
+        }
+    }
+
 </style>
 </head>
 <body>
+<div class="top-bar">
+    <div class="brand">by EAKWİNner</div>
+</div>
 <div class="container">
     <div class="left-panel">
         <div class="header">Chat - QR Dönüştürücü</div>
         <div class="messages"></div>
         <div class="input-area">
-            <input type="text" placeholder="Mesaj yaz..." />
+            <input type="text" placeholder="Mesaj yaz... (Türkçe karakter destekli)">
             <button class="send-btn">Gönder</button>
         </div>
+        <div class="decode-area">
+            <button class="decode-btn">QR Yükle ve Çöz</button>
+        </div>
+        <input type="file" accept="image/*" style="display:none" class="file-input"/>
     </div>
     <div class="right-panel">
         <div class="qr-container">
@@ -145,6 +236,10 @@
 
 <!-- QRCode.js CDN -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<!-- jsQR (QR decoder) CDN -->
+<script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const input = document.querySelector('.input-area input');
@@ -154,14 +249,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const qrcodeEl = document.getElementById('qrcode');
     const downloadPNGBtn = document.querySelector('.download-png');
     const downloadJPGBtn = document.querySelector('.download-jpg');
+    const downloadArea = document.querySelector('.download-area');
+    const decodeBtn = document.querySelector('.decode-btn');
+    const fileInput = document.querySelector('.file-input');
+
     let qrcode;
 
+    function addMessage(msg) {
+        const div = document.createElement('div');
+        div.classList.add('message');
+        div.textContent = msg;
+        messages.appendChild(div);
+        messages.scrollTop = messages.scrollHeight;
+    }
+
     function generateQR(text) {
+        // Unicode fix
+        const utf8Text = unescape(encodeURIComponent(text));
+
         qrcodeEl.innerHTML = ''; 
         qrContainer.classList.remove('show');
+        downloadArea.classList.remove('show');
         setTimeout(() => {
             qrcode = new QRCode(qrcodeEl, {
-                text: text,
+                text: utf8Text,
                 width: 300,
                 height: 300,
                 colorDark: "#ffffff",
@@ -169,17 +280,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 correctLevel: QRCode.CorrectLevel.H
             });
             qrContainer.classList.add('show');
+            // Gösterildikten sonra butonlar gelsin
+            downloadArea.classList.add('show');
         }, 50);
     }
 
     sendBtn.addEventListener('click', () => {
         const val = input.value.trim();
         if(val) {
-            const msg = document.createElement('div');
-            msg.classList.add('message');
-            msg.textContent = val;
-            messages.appendChild(msg);
-            messages.scrollTop = messages.scrollHeight; 
+            addMessage(val);
             generateQR(val);
             input.value = '';
             input.focus();
@@ -216,6 +325,38 @@ document.addEventListener('DOMContentLoaded', () => {
     downloadJPGBtn.addEventListener('click', () => {
         downloadQR('jpg');
     });
+
+    decodeBtn.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = function() {
+            const img = new Image();
+            img.src = reader.result;
+            img.onload = function() {
+                // Canvas üzerinde resmi çiz ve jsQR ile tara
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const code = jsQR(imageData.data, canvas.width, canvas.height);
+                if(code) {
+                    addMessage("Çözülen QR: " + code.data);
+                } else {
+                    addMessage("QR kod çözülemedi.");
+                }
+                fileInput.value = '';
+            }
+        };
+        reader.readAsDataURL(file);
+    });
+
 });
 </script>
 </body>
